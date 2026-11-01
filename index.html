@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自己PR</title>
+
+  <!-- Google Fonts: 'Noto Sans JP' (Arial-like clean Japanese Gothic) & 'Outfit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* --- Reset & Global Theme --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-page: #ebeef2;               /* Light grey background */
+      --banner-bg: #d4dae0;             /* Google Sites-style banner */
+      --text-main: #1d2127;             /* Dark body text */
+      --text-muted: #555e6b;            /* Subdued grey */
+      --brand-blue: #2563eb;            /* Vivid royal blue */
+      --brand-blue-glow: rgba(37, 99, 235, 0.3);
+      --card-white: #ffffff;
+      --font-gothic: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    /* Page Fade-In Transition */
+    @keyframes pageFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-gothic);
+      line-height: 1.7;
+      padding-bottom: 110px;
+      overflow-x: hidden;
+      animation: pageFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* --- Google Sites-Style Gray Title Banner --- */
+    .banner {
+      width: 100%;
+      background: linear-gradient(180deg, #cfd6dc 0%, #dde2e8 100%);
+      padding: clamp(50px, 7.5vw, 95px) 20px;
+      text-align: center;
+      margin-bottom: clamp(24px, 4vw, 40px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    }
+
+    .banner h1 {
+      font-size: clamp(2.8rem, 7vw, 4.6rem);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      color: var(--text-main);
+      line-height: 1.15;
+      padding-left: 0.14em;
+    }
+
+    /* --- Centered Catchphrase --- */
+    .tagline-container {
+      text-align: center;
+      margin-bottom: clamp(28px, 4.5vw, 48px);
+      padding: 0 16px;
+    }
+
+    .tagline {
+      font-size: clamp(1.2rem, 3.2vw, 1.85rem);
+      font-weight: 700;
+      color: #242a33;
+      letter-spacing: 0.08em;
+    }
+
+    /* --- Subtitle: スマホGame (Black Text) --- */
+    .section-subtitle {
+      text-align: center;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      color: #000000;
+      letter-spacing: 0.08em;
+      margin-bottom: clamp(16px, 2.5vw, 24px);
+    }
+
+    /* --- Invisible GIF Showcase Deck (Fixed 3-Columns) --- */
+    .gif-deck-wrapper {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+      background: transparent;
+    }
+
+    .gif-deck {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: clamp(8px, 2.5vw, 28px);
+      width: 100%;
+    }
+
+    /* Ratio size 154x277 & Clickable Card with 4px Vivid Blue Hover Border */
+    .gif-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 154 / 277;
+      border-radius: clamp(6px, 1.4vw, 12px);
+      overflow: hidden;
+      background-color: #dcdcdc;
+      display: block;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      border: 4px solid transparent;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      cursor: pointer;
+    }
+
+    .gif-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--brand-blue);
+      box-shadow: 0 14px 34px var(--brand-blue-glow);
+    }
+
+    /* Skeleton Loading Shimmer */
+    .gif-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, #d8d8d8 25%, #ececec 50%, #d8d8d8 75%);
+      background-size: 200% 100%;
+      animation: pulse 1.6s infinite;
+      z-index: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .gif-card.loaded::before {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .gif-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      position: relative;
+      z-index: 2;
+    }
+
+    .gif-card.loaded img {
+      opacity: 1;
+    }
+
+    /* --- Note Below the GIFs (2 Clear Lines) --- */
+    .gif-note {
+      text-align: center;
+      font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+      color: var(--text-muted);
+      margin-top: 22px;
+      font-weight: 500;
+      line-height: 1.9;
+    }
+
+    .gif-note p {
+      margin: 0;
+    }
+
+    /* --- Card for Demo動画 --- */
+    .video-card-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .video-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(24px, 4vw, 42px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .video-card-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: clamp(20px, 3.5vw, 34px);
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+    }
+
+    /* 2 Mobile-Sized Videos Side by Side */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: clamp(10px, 2.5vw, 28px);
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .video-frame-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 154 / 277;
+      background: #111;
+      border-radius: clamp(8px, 1.4vw, 12px);
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .video-frame-container iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* --- Card for 「私の強み」 --- */
+    .strength-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .strength-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(32px, 5.5vw, 54px) clamp(22px, 5vw, 56px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .strength-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: clamp(24px, 4vw, 36px);
+      letter-spacing: 0.08em;
+    }
+
+    /* Larger font size & Dark Grey text (#434954) */
+    .strength-content {
+      font-size: clamp(1.25rem, 2.3vw, 1.45rem);
+      line-height: 2.25;
+      color: #434954;
+      font-weight: 400;
+    }
+
+    .strength-content p {
+      margin-bottom: 24px;
+    }
+
+    .strength-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* --- Card for 「プログラミング言語」 --- */
+    .skills-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .skills-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(32px, 5.5vw, 54px) clamp(22px, 5vw, 56px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .skills-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: clamp(24px, 4vw, 36px);
+      letter-spacing: 0.08em;
+    }
+
+    .skills-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: baseline;
+      padding: 8px 0;
+      background: transparent;
+      border: none;
+      font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+      line-height: 1.8;
+    }
+
+    .skill-badge {
+      display: inline-block;
+      font-weight: 700;
+      color: #1e293b;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
+
+    .skill-items {
+      color: #434954;
+      font-weight: 500;
+    }
+
+    @media (max-width: 640px) {
+      .skill-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 6px 0;
+      }
+      .skill-badge {
+        min-width: auto;
+      }
+    }
+
+    /* --- Card for 「Art」 --- */
+    .art-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .art-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(24px, 4vw, 42px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .art-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: clamp(20px, 3.5vw, 34px);
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+    }
+
+    .art-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: clamp(8px, 2.5vw, 28px);
+      width: 100%;
+    }
+
+    .art-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 154 / 277;
+      border-radius: clamp(6px, 1.4vw, 12px);
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      background-color: #e5e9ee;
+    }
+
+    .art-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .art-link-wrapper {
+      text-align: center;
+      margin-top: clamp(22px, 3.5vw, 32px);
+    }
+
+    .art-link-text {
+      color: var(--brand-blue);
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s ease, opacity 0.2s ease;
+      display: inline-block;
+    }
+
+    .art-link-text:hover {
+      color: #1d4ed8;
+      opacity: 0.8;
+      text-decoration: none;
+    }
+
+    /* --- Card for 「好きなゲーム」 --- */
+    .games-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .games-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(30px, 5vw, 50px) clamp(22px, 5vw, 56px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+
+    .games-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: clamp(12px, 2vw, 16px);
+      letter-spacing: 0.08em;
+    }
+
+    .games-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .games-list p {
+      font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+      color: #434954;
+      font-weight: 500;
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+    }
+
+    /* --- Card for 「憧れている人」 --- */
+    .role-models-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto clamp(46px, 6.5vw, 75px);
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .role-models-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(32px, 5.5vw, 54px) clamp(16px, 3.5vw, 44px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+
+    .role-models-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: clamp(24px, 4vw, 40px);
+      letter-spacing: 0.08em;
+    }
+
+    /* Balanced 5-item Flexbox Grid */
+    .role-models-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: clamp(14px, 2vw, 24px);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .role-model-item {
+      flex: 1 1 170px;
+      max-width: 195px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .role-model-image-frame {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: clamp(10px, 1.8vw, 16px);
+      overflow: hidden;
+      background: #e2e8f0;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+      margin-bottom: clamp(10px, 1.8vw, 16px);
+    }
+
+    .role-model-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .role-model-name {
+      font-size: clamp(1rem, 1.8vw, 1.18rem);
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .role-model-item {
+        flex: 1 1 calc(50% - 14px);
+        max-width: 180px;
+      }
+    }
+
+    /* --- New: Card for 「目標」 --- */
+    .goal-section {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 clamp(10px, 2.5vw, 24px);
+    }
+
+    .goal-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(34px, 5.5vw, 56px) clamp(22px, 5vw, 56px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+
+    .goal-title {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+      font-weight: 900;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: clamp(18px, 3.5vw, 28px);
+      letter-spacing: 0.08em;
+    }
+
+    .goal-text {
+      font-size: clamp(1.2rem, 2.3vw, 1.42rem);
+      line-height: 2.2;
+      color: #3b424e;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Expanded Gray Banner -->
+  <header class="banner">
+    <h1>自己PR</h1>
+  </header>
+
+  <!-- 2. Centered Tagline -->
+  <div class="tagline-container">
+    <p class="tagline">香港出身。日本のゲーム開発への夢。</p>
+  </div>
+
+  <!-- 3. Subtitle: スマホGame (Black) -->
+  <h2 class="section-subtitle">スマホGame</h2>
+
+  <!-- 4. 3-GIF Showcase Deck -->
+  <main class="gif-deck-wrapper">
+    <div class="gif-deck">
+      <!-- Game 1 -->
+      <a href="http://thekanjigame.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+        <img src="game1.gif" alt="The Kanji Game" />
+      </a>
+
+      <!-- Game 2 -->
+      <a href="https://goto-hell-game.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+        <img src="game2.gif" alt="Goto Hell Game" />
+      </a>
+
+      <!-- Game 3 -->
+      <a href="https://swordman-b.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+        <img src="game3.gif" alt="Swordman B" />
+      </a>
+    </div>
+
+    <!-- 2 Separate Note Lines -->
+    <div class="gif-note">
+      <p>※ 画像をクリックすると、ブラウザ上で実際にプレイできます。</p>
+      <p>※ スマホブラウザでプレイお願いします</p>
+    </div>
+  </main>
+
+  <!-- 5. Demo動画 Card -->
+  <section class="video-card-section">
+    <div class="video-card">
+      <h2 class="video-card-title">Demo動画</h2>
+      <div class="video-grid">
+        <div class="video-frame-container">
+          <iframe
+            src="https://www.youtube.com/embed/H4Lz8WR17VM"
+            title="Demo動画 1"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="video-frame-container">
+          <iframe
+            src="https://www.youtube.com/embed/M7laU5yapiI"
+            title="Demo動画 2"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 私の強み Section -->
+  <section class="strength-section">
+    <article class="strength-card">
+      <h2 class="strength-title">私の強み</h2>
+      <div class="strength-content">
+        <p>
+          私の強みは、他人のアイデアを合わせ、魅力的な形へと現実化する力です。
+        </p>
+        <p>
+          大学のゲームサークルで、友人と「歴史上の偉人を天国と地獄に仕分けるゲーム」を制作しました。当初、友人はマッチングアプリのようなカードスワイプ方式を提案していましたが、「何か物足りない」と手応えに悩んでいました。
+        </p>
+        <p>
+          そこで私は他作品の研究から着想を得て、より直感的に没入できるUIへの刷新を提案しました。
+        </p>
+        <p>
+          単純なカード操作ではなく、動くキャラクターを1体ずつステージに登場させ、画面上の「空」へドラッグすれば天国、「溶岩」へドラッグすれば地獄へ落とせる、直感的なアクションシステムへと改良しました。
+        </p>
+        <p>
+          その結果、ゲームの操作性と面白さが大幅に向上し、プレイヤーからも高い評価を得ることができました。
+        </p>
+        <p>
+          この柔軟な発想力と具現化する力を活かし、国籍や言語の壁を越えて、誰でも直感的に熱中できるゲーム制作を通じて御社に貢献したいと考えております。
+        </p> 
+      </div>
+    </article>
+  </section>
+
+  <!-- 7. プログラミング言語 Section -->
+  <section class="skills-section">
+    <article class="skills-card">
+      <h2 class="skills-title">プログラミング言語</h2>
+      <div class="skills-list">
+        <div class="skill-row">
+          <span class="skill-badge">熟練度:</span>
+          <span class="skill-items">HTML、JavaScript、Python、Java、C++</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-badge">中級:</span>
+          <span class="skill-items">Flutter、Kotlin、Go、TI-84</span>
+        </div>
+        <div class="skill-row">
+          <span class="skill-badge">初級レベル:</span>
+          <span class="skill-items">C、C#、アセンブリ</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 8. Art Section -->
+  <section class="art-section">
+    <div class="art-card">
+      <h2 class="art-title">Art</h2>
+      <div class="art-grid">
+        <div class="art-frame">
+          <img src="art1.PNG" alt="Art 1" />
+        </div>
+        <div class="art-frame">
+          <img src="art2.PNG" alt="Art 2" />
+        </div>
+        <div class="art-frame">
+          <img src="art3.PNG" alt="Art 3" />
+        </div>
+      </div>
+
+      <!-- Clean, Not Underlined Blue Link -->
+      <div class="art-link-wrapper">
+        <a
+          href="https://portfolio.angusmak0324.workers.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="art-link-text"
+        >
+          アートポートフォリオ ↗
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. 好きなゲーム Section -->
+  <section class="games-section">
+    <article class="games-card">
+      <h2 class="games-title">好きなゲーム</h2>
+      <div class="games-list">
+        <p>マインクラフト</p>
+        <p>ゼルダの伝説ブレスオブザワイルド</p>
+        <p>ペルソナ３</p>
+        <p>アークナイツ</p>
+        <p>マリオメーカ</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- 10. 憧れている人 Section (5 People Layout) -->
+  <section class="role-models-section">
+    <article class="role-models-card">
+      <h2 class="role-models-title">憧れている人</h2>
+      <div class="role-models-grid">
+        <!-- Steve Jobs -->
+        <div class="role-model-item">
+          <div class="role-model-image-frame">
+            <img
+              src="https://live.staticflickr.com/6220/6216457030_2cf0aff09d_z.jpg"
+              alt="スティーブ・ジョブズ"
+            />
+          </div>
+          <p class="role-model-name">スティーブ・ジョブズ</p>
+        </div>
+
+        <!-- Satoru Iwata -->
+        <div class="role-model-item">
+          <div class="role-model-image-frame">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Satoru_Iwata_-_Game_Developers_Conference_2011_-_Day_2_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
+              alt="岩田聡"
+            />
+          </div>
+          <p class="role-model-name">岩田聡</p>
+        </div>
+
+        <!-- Elon Musk -->
+        <div class="role-model-item">
+          <div class="role-model-image-frame">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
+              alt="イーロン・マスク"
+            />
+          </div>
+          <p class="role-model-name">イーロン・マスク</p>
+        </div>
+
+        <!-- Alan Turing -->
+        <div class="role-model-item">
+          <div class="role-model-image-frame">
+            <img
+              src="https://cdn2.picryl.com/photo/1929/12/31/alan-turing-at-age-16-colorized-a1cc2a-1024.jpg"
+              alt="アラン・チューリング"
+            />
+          </div>
+          <p class="role-model-name">アラン・チューリング</p>
+        </div>
+
+        <!-- Antonio Inoki -->
+        <div class="role-model-item">
+          <div class="role-model-image-frame">
+            <img
+              src="mc9ixi0igueh1.JPEG"
+              alt="アントニオ猪木"
+            />
+          </div>
+          <p class="role-model-name">アントニオ猪木</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 11. 目標 Section (New) -->
+  <section class="goal-section">
+    <article class="goal-card">
+      <h2 class="goal-title">目標</h2>
+      <p class="goal-text">
+        日本のゲーム会社でプログラミングやアートのスキルを活かし、世界中の誰もが楽しめるゲームを創り出したい！
+      </p>
+    </article>
+  </section>
+
+  <!-- Image Shimmer Handler -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".gif-card");
+      cards.forEach((card) => {
+        const img = card.querySelector("img");
+        if (img) {
+          if (img.complete && img.naturalHeight !== 0) {
+            card.classList.add("loaded");
+          } else {
+            img.addEventListener("load", () => card.classList.add("loaded"));
+            img.addEventListener("error", () => card.classList.add("loaded"));
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
