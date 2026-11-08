@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>経験 | マク・イリン ポートフォリオ</title>
+
+  <!-- Google Fonts: 'M PLUS 1p', 'Noto Sans JP', & 'Outfit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* --- Reset & Global Theme --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-page: #ebeef2;               /* Light grey background */
+      --text-main: #1d2127;             /* Dark body text */
+      --text-muted: #555e6b;            /* Subdued grey */
+      --text-light-grey: #8c96a5;       /* Lighter grey for tags/meta */
+      --brand-blue: #2563eb;            /* Vivid royal blue */
+      --brand-blue-hover: #1d4ed8;
+      --card-white: #ffffff;
+      --font-gothic: "Noto Sans JP", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      --font-jiko: "M PLUS 1p", Arial, "Helvetica Neue", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-gothic);
+      line-height: 1.7;
+      padding-top: clamp(86px, 11vw, 105px);
+      padding-bottom: 110px;
+      overflow-x: hidden;
+    }
+
+    /* --- Pixel Curtain Canvas --- */
+    #pixelCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      pointer-events: none;
+    }
+
+    /* --- Main Menu Bar --- */
+    .menu-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(212, 218, 224, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      z-index: 1000;
+    }
+
+    .banner-inner {
+      width: 100%;
+      max-width: 960px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(12px, 3vw, 24px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 2.2vw, 24px);
+    }
+
+    /* Regular sub button */
+    .nav-sub-btn {
+      font-size: clamp(1.25rem, 1.9vw, 1.65rem);
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-sub-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    /* Active page button (経験) */
+    .nav-active-btn {
+      font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-active-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    .nav-name-text {
+      font-family: "Outfit", sans-serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* --- Container --- */
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 clamp(14px, 3vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(24px, 3.5vw, 36px);
+    }
+
+    /* --- Experience White Card --- */
+    .experience-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(28px, 4.5vw, 44px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      font-family: var(--font-jiko);
+    }
+
+    /* Section Main Title */
+    .section-main-title {
+      font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }
+
+    /* Greyed out text directly beside main titles */
+    .title-sub-text {
+      color: var(--text-light-grey);
+      font-weight: 500;
+      font-size: clamp(1rem, 1.6vw, 1.25rem);
+      margin-left: 8px;
+      letter-spacing: 0.01em;
+      display: inline-block;
+    }
+
+    /* Experience Items */
+    .exp-item {
+      margin-bottom: 28px;
+    }
+
+    .exp-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Sub-header (Company / Project + Period) */
+    .exp-header {
+      font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* Greyed out location tag */
+    .exp-location {
+      color: var(--text-light-grey);
+      font-weight: 500;
+      font-size: 0.95em;
+      margin-left: 4px;
+    }
+
+    /* Bullet List */
+    .exp-list {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .exp-list li {
+      position: relative;
+      padding-left: 1.4em;
+      font-size: clamp(1rem, 1.55vw, 1.15rem);
+      color: #38404a;
+      line-height: 1.76;
+      font-weight: 500;
+    }
+
+    .exp-list li::before {
+      content: "・";
+      position: absolute;
+      left: 0;
+      color: var(--brand-blue);
+      font-weight: 700;
+      font-size: 1.15em;
+    }
+
+    /* Link Style */
+    .exp-link {
+      color: var(--brand-blue);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      word-break: break-all;
+      transition: color 0.2s ease;
+      font-weight: 500;
+    }
+
+    .exp-link:hover {
+      color: var(--brand-blue-hover);
+    }
+
+    /* --- 修士研究 Section Layout & Text Wrapping --- */
+    .research-body {
+      overflow: hidden;
+    }
+
+    .research-body::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    /* Floated image wrapper to enable text wrapping */
+    .research-photo-wrapper {
+      float: left;
+      width: clamp(170px, 25vw, 230px);
+      aspect-ratio: 2160 / 3033;
+      margin-top: 4px;
+      margin-right: clamp(18px, 2.8vw, 28px);
+      margin-bottom: clamp(14px, 2vw, 20px);
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      background-color: #e2e8f0;
+    }
+
+    .research-photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .research-body p {
+      font-size: clamp(1rem, 1.55vw, 1.15rem);
+      color: #38404a;
+      line-height: 1.82;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .research-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 480px) {
+      .research-photo-wrapper {
+        width: 135px;
+        margin-right: 14px;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- Opening Pixels Reveal Canvas -->
+  <canvas id="pixelCanvas"></canvas>
+
+  <!-- Top Menu Banner -->
+  <header class="menu-banner">
+    <div class="banner-inner">
+      <div class="nav-left-group">
+        <a href="index.html" class="nav-sub-btn">home</a>
+        <a href="#top" class="nav-active-btn">経験</a>
+        <a href="bunseki.html" class="nav-sub-btn">自己分析</a>
+      </div>
+      <span class="nav-name-text">MAK WAI LUN</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Card 1: アルバイト -->
+    <section class="experience-card">
+      <h1 class="section-main-title">アルバイト</h1>
+
+      <article class="exp-item">
+        <h2 class="exp-header">株式会社コスパ 秋葉原 (2026年2月~2026年6月)</h2>
+        <ul class="exp-list">
+          <li>店舗での接客や販売、品出しなどの業務に励みました。日本人のお客様だけでなく、海外からのお客様にも対応いたしました。同僚は全員日本人でしたので、教科書だけで学べない敬語や礼儀、現場での効率的なコミュニケーション方法をしっかり学びました。</li>
+          <li>そのバイトは、私にとって本当に価値のある素晴らしい経験になりました。</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Card 2: 修士研究 -->
+    <section class="experience-card">
+      <h1 class="section-main-title">
+        修士研究 <span class="title-sub-text">[早稲田大学 基幹理工学部]</span>
+      </h1>
+
+      <div class="research-body">
+        <div class="research-photo-wrapper">
+          <img src="jushou.jpg" alt="日本音響学会 受賞" />
+        </div>
+        <p>現在修士課程で研究しているのは、リアルタイム音声分析AIのアルゴリズムを高速化する技術です。</p>
+        <p>私の趣味はギターの演奏なので、「演奏音から即座にギターコードを判別し、演奏者を支援するAI」の実現を目指して修士研究に取り組んでいます。</p>
+        <p>現在の技術は単音（シングルノート）の判別が限界ですが、最も大きい挑戦は和音（コード）のリアルタイムの認識でした。</p>
+        <p>私はこの課題に対し、TensorFlowを用いた深層学習モデルの構築だけでなく、C++言語を深く追究してデータ処理アルゴリズムを何回も見直し、徹底的な処理の高速化を実現しました。</p>
+        <p>そこで、最近は、TensorFlowによる深層学習モデル構築に加え、C++を用いて音声データを低遅延で読み込む技術を学び、データ処理アルゴリズムを高速化しました。</p>
+        <p>その成果が高く評価され、今年度の「日本音響学会 第32回学生優秀発表賞」を受賞しました。</p>
+        <p>研究で学んだ「AIと特別なプログラミング言語を使ってシステムを速く動かす方法」を活かして、将来はゲームの描画負荷軽減やリアルタイム物理挙動の改善など、高度なプレイ体験の実現に貢献したいと考えています。</p>
+      </div>
+    </section>
+
+    <!-- Card 3: インターンシップ -->
+    <section class="experience-card">
+      <h1 class="section-main-title">インターンシップ</h1>
+
+      <!-- Entry 1 -->
+      <article class="exp-item">
+        <h2 class="exp-header">香港科学館 (2025年6月~9月)</h2>
+        <ul class="exp-list">
+          <li>汚染された水滴を分析するスマホアプリをプログラムしました。</li>
+          <li>卒業後は日本に来る前に香港科学館の企業で３か月間アプリ開発のインターンシップをしておりました。</li>
+          <li>水滴の清浄度を分析するアプリと、水質検査キットとデバイスの内部システムにおけるプログラミングを担当しました。</li>
+          <li>開発言語：C++/Swift/Flutter</li>
+          <li>
+            <a href="https://www.visiondropai.com/" target="_blank" rel="noopener noreferrer" class="exp-link">
+              https://www.visiondropai.com/
+            </a>
+          </li>
+        </ul>
+      </article>
+
+      <!-- Entry 2 --> 
+      <article class="exp-item">
+        <h2 class="exp-header">
+          源氏物語データベース (2024年3月~2025年5月)
+          <span class="exp-location">[ボストン大学、アメリカ]</span>
+        </h2>
+        <ul class="exp-list">
+          <li>世界で初めて作られた小説に関する知識を広めることを目的としたウェブサイトの構築に取り組みました。</li>
+          <li>ユーザーは、物語の詩や章をナビゲートすることができます。</li>
+          <li>ウェブサイトは、アプリケーションにReact/Next.js、API呼び出しにNeo4jデータベースを採用しています。</li>
+          <li>私の主な役割は、主人公である光源氏の一族の系図を描いた、ユーザーフレンドリーな図解ページを作成することでした。</li>
+          <li> 
+            <a href="https://taleofgenji.vercel.app" target="_blank" rel="noopener noreferrer" class="exp-link">
+              https://taleofgenji.vercel.app
+            </a>
+          </li>
+        </ul>
+      </article>
+
+      <!-- Entry 3 -->
+      <article class="exp-item">
+        <h2 class="exp-header">
+          ウェブサイト開発者インターン (2024年3月~2025年1月)
+          <span class="exp-location">[ロードアイランド州、アメリカ]</span>
+        </h2>
+        <ul class="exp-list">
+          <li>鍼灸師の博士に依頼を受け、2002年に公開された彼の会社のウェブサイトのリニューアルを手伝いました。</li>
+          <li>ウェブサイトの改修を通して、古いファイル（ASP, Flash）を、現在より普及しているフォーマット（HTML5, Javascript）に変換できました。</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Card 4: 学歴 -->
+    <section class="experience-card">
+      <h1 class="section-main-title">学歴</h1>
+
+      <!-- Degree 1: 早稲田大学 -->
+      <article class="exp-item">
+        <h2 class="exp-header">早稲田大学理工学部表現工学科 大学院生</h2>
+        <ul class="exp-list">
+          <li>2025年9月入学~2027年10月卒業予定</li>
+          <li>日本音響学会第32回 2026年春季研究発表会 学生優秀発表賞</li>
+        </ul>
+      </article>
+
+      <!-- Degree 2: ボストン大学 -->
+      <article class="exp-item">
+        <h2 class="exp-header">ボストン大学</h2>
+        <ul class="exp-list">
+          <li>2021年9月 ~ 2025年5月卒業</li>
+          <li>学士号: コンピュータサイエンス</li>
+          <li>副専攻: 日本文学</li>
+          <li>学部長表彰: 2021年秋、2022年春、2022年秋、2023年春、2023年秋、2024年春、2024年秋</li>
+          <li>累積GPA: 3.74/4.0</li>
+        </ul>
+      </article>
+
+      <!-- Degree 3: 高校 -->
+      <article class="exp-item">
+        <h2 class="exp-header">
+          Capistrano Valley Christian Schools 高校
+          <span class="exp-location">[カリフォルニア州、アメリカ]</span>
+        </h2>
+        <ul class="exp-list">
+          <li>上級レベルのコース：生物学、微積分学、アメリカ政治学、英文学</li>
+          <li>芸術優等生協会会員からの優等証書</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       Pixel Reveal Effect (Consistent with index.html)
+       ===================================================================== */
+    (function () {
+      const canvas = document.getElementById("pixelCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      const squareSize = 34;
+      const cols = Math.ceil(width / squareSize);
+      const rows = Math.ceil(height / squareSize);
+      const centerCol = (cols - 1) / 2;
+      const maxDist = cols / 2;
+
+      const pixelR = 98;
+      const pixelG = 138;
+      const pixelB = 188;
+
+      const squares = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const distFromCenter = Math.abs(c - centerCol);
+          const normDist = distFromCenter / (maxDist || 1);
+          const jitter = (Math.random() - 0.5) * 0.12;
+          const startDelay = Math.max(0, normDist + jitter);
+
+          squares.push({
+            x: c * squareSize,
+            y: r * squareSize,
+            startDelay: startDelay
+          });
+        }
+      }
+
+      const animDuration = 1150;
+      let startTime = null;
+
+      function render(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / animDuration, 1);
+
+        ctx.clearRect(0, 0, width, height);
+
+        let allFinished = true;
+
+        for (let i = 0; i < squares.length; i++) {
+          const sq = squares[i];
+          const fadeWindow = 0.28;
+          let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
+
+          if (localP < 0) localP = 0;
+          if (localP > 1) localP = 1;
+
+          const alpha = 1 - localP;
+
+          if (alpha > 0) {
+            allFinished = false;
+            ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
+            ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+          }
+        }
+
+        if (!allFinished && progress < 1) {
+          requestAnimationFrame(render);
+        } else {
+          canvas.remove();
+        }
+      }
+
+      requestAnimationFrame(render);
+    })();
+  </script>
+</body>
+</html> 

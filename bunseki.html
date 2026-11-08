@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自己分析 | マク・イリン ポートフォリオ</title>
+
+  <!-- Google Fonts: 'M PLUS 1p', 'Noto Sans JP', & 'Outfit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* --- Reset & Global Theme --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-page: #ebeef2;               /* Light grey background */
+      --text-main: #1d2127;             /* Dark body text */
+      --text-muted: #555e6b;            /* Subdued grey */
+      --text-light-grey: #8c96a5;       /* Lighter grey */
+      --brand-blue: #2563eb;            /* Vivid royal blue */
+      --brand-blue-hover: #1d4ed8;
+      --card-white: #ffffff;
+      --font-gothic: "Noto Sans JP", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      --font-jiko: "M PLUS 1p", Arial, "Helvetica Neue", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-gothic);
+      line-height: 1.7;
+      padding-top: clamp(86px, 11vw, 105px);
+      padding-bottom: 110px;
+      overflow-x: hidden;
+    }
+
+    /* --- Pixel Curtain Canvas --- */
+    #pixelCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      pointer-events: none;
+    }
+
+    /* --- Main Menu Bar --- */
+    .menu-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(212, 218, 224, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      z-index: 1000;
+    }
+
+    .banner-inner {
+      width: 100%;
+      max-width: 960px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(12px, 3vw, 24px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 2.2vw, 24px);
+    }
+
+    /* Regular sub button */
+    .nav-sub-btn {
+      font-size: clamp(1.25rem, 1.9vw, 1.65rem);
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-sub-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    /* Active page button (自己分析 is active) */
+    .nav-active-btn {
+      font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-active-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    .nav-name-text {
+      font-family: "Outfit", sans-serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* --- Container --- */
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 clamp(14px, 3vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(24px, 3.5vw, 36px);
+    }
+
+    /* --- White Card --- */
+    .analysis-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(28px, 4.5vw, 44px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      font-family: var(--font-jiko);
+    }
+
+    /* Section Main Title */
+    .section-main-title {
+      font-size: clamp(1.35rem, 2.3vw, 1.85rem);
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: 0.03em;
+      line-height: 1.45;
+      margin-bottom: 24px;
+    }
+
+    /* Floated Layout for Image & Text Wrapping */
+    .analysis-body {
+      overflow: hidden;
+    }
+
+    .analysis-body::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .analysis-photo-wrapper {
+        float: left; 
+        width: clamp(180px, 28vw, 260px);
+        margin-top: 4px;
+        margin-right: clamp(18px, 3vw, 28px);
+        margin-bottom: clamp(14px, 2.2vw, 20px);
+        border-radius: 12px; /* 👈 Change from 0 to 12px */
+        overflow: hidden;    /* 👈 Keep this: it clips the photo to the rounded shape */
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        background-color: #e2e8f0;
+    }
+
+    .analysis-photo-wrapper img {
+      width: 90%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+
+    .analysis-body p {
+      font-size: clamp(1rem, 1.55vw, 1.15rem);
+      color: #38404a;
+      line-height: 1.85;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .analysis-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 520px) {
+      .analysis-photo-wrapper {
+        width: 145px;
+        margin-right: 14px;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- Opening Pixels Reveal Canvas -->
+  <canvas id="pixelCanvas"></canvas>
+
+  <!-- Top Menu Banner -->
+  <header class="menu-banner">
+    <div class="banner-inner">
+      <div class="nav-left-group">
+        <a href="index.html" class="nav-sub-btn">home</a>
+        <a href="keiken.html" class="nav-sub-btn">経験</a>
+        <a href="#top" class="nav-active-btn">自己分析</a>
+      </div>
+      <span class="nav-name-text">MAK WAI LUN</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="analysis-card">
+      <h1 class="section-main-title">一番夢中になったことや、力を入れて取り組んだことは何か？</h1>
+
+      <div class="analysis-body">
+        <div class="analysis-photo-wrapper">
+          <img src="book-collection.jpg" alt="日本語の勉強" />
+        </div>
+        <p>今一番力を入れて取り組んでいるのは日本語の勉強です。</p>
+        <p>始めたきっかけは子供の頃にあります。</p>
+        <p>当時の僕が日本製のゲームが大好きで、友達と遊ぶために自分でも紙やノートでゲームを作る趣味がありました。ただ、その時は日本人の創造力が世界にどんな影響を与えているかまだ理解できませんでした。</p>
+        <p>その後、15歳でアメリカに留学した時、たくさんのアメリカの友達の家にも日本のゲームがあることに気がつきました。そこで初めて、日本のゲームの影響力の凄さを実感しました。</p>
+        <p>なので、ボストン大学に入学した時に、「日本人の友達や考え方を理解したい」という目的で、必死に日本語を勉強しました。</p>
+        <p>今でも日本語はまだまだ勉強中ですが、私の夢は日本のゲーム会社で働くことです。</p>　
+        <p>だから、絶対に諦めずにこれからも頑張ります！！！</p> 
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       Pixel Reveal Effect (Consistent across all pages)
+       ===================================================================== */
+    (function () {
+      const canvas = document.getElementById("pixelCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      const squareSize = 34;
+      const cols = Math.ceil(width / squareSize);
+      const rows = Math.ceil(height / squareSize);
+      const centerCol = (cols - 1) / 2;
+      const maxDist = cols / 2;
+
+      const pixelR = 98;
+      const pixelG = 138;
+      const pixelB = 188;
+
+      const squares = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const distFromCenter = Math.abs(c - centerCol);
+          const normDist = distFromCenter / (maxDist || 1);
+          const jitter = (Math.random() - 0.5) * 0.12;
+          const startDelay = Math.max(0, normDist + jitter);
+
+          squares.push({
+            x: c * squareSize,
+            y: r * squareSize,
+            startDelay: startDelay
+          });
+        }
+      }
+
+      const animDuration = 1150;
+      let startTime = null;
+
+      function render(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / animDuration, 1);
+
+        ctx.clearRect(0, 0, width, height);
+
+        let allFinished = true;
+
+        for (let i = 0; i < squares.length; i++) {
+          const sq = squares[i];
+          const fadeWindow = 0.28;
+          let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
+
+          if (localP < 0) localP = 0;
+          if (localP > 1) localP = 1;
+
+          const alpha = 1 - localP;
+
+          if (alpha > 0) {
+            allFinished = false;
+            ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
+            ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+          }
+        }
+
+        if (!allFinished && progress < 1) {
+          requestAnimationFrame(render);
+        } else {
+          canvas.remove();
+        }
+      }
+
+      requestAnimationFrame(render);
+    })();
+  </script>
+</body>
+</html> 
