@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swordman</title>
+
+  <!-- Google Fonts: 'M PLUS 1p', 'Noto Sans JP', & 'Outfit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* --- Reset & Global Theme --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-page: #ebeef2;               /* Light grey background */
+      --text-main: #1d2127;             /* Dark body text */
+      --text-muted: #555e6b;            /* Subdued grey */
+      --brand-blue: #2563eb;            /* Royal blue */
+      --brand-blue-hover: #1d4ed8;
+      --card-white: #ffffff;
+      --font-gothic: "Noto Sans JP", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      --font-jiko: "M PLUS 1p", Arial, "Helvetica Neue", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-gothic);
+      line-height: 1.75;
+      padding-top: clamp(86px, 11vw, 105px);
+      padding-bottom: 120px;
+      overflow-x: hidden;
+    }
+
+    /* --- Loading Overlay & Pixel Curtain --- */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background-color: rgb(98, 138, 188); /* Curtain theme color */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease;
+      pointer-events: all;
+    }
+
+    #loadingOverlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      width: clamp(260px, 60vw, 400px);
+      text-align: center;
+      color: #ffffff;
+      font-family: "Outfit", var(--font-jiko);
+      padding: 20px;
+    }
+
+    .loading-title {
+      font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 22px;
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      transition: width 0.15s ease-out;
+    }
+
+    .progress-percent {
+      margin-top: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    #pixelCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      pointer-events: none;
+    }
+
+    /* --- Main Menu Bar --- */
+    .menu-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(212, 218, 224, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      z-index: 1000;
+    }
+
+    .banner-inner {
+      width: 100%;
+      max-width: 960px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(12px, 3vw, 24px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 2.2vw, 24px);
+    }
+
+    .nav-sub-btn {
+      font-size: clamp(1.25rem, 1.9vw, 1.65rem);
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-sub-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    .nav-name-text {
+      font-family: "Outfit", sans-serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* --- Container --- */
+    .container {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 clamp(14px, 3vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(24px, 3.5vw, 36px);
+    }
+
+    /* --- Back to Home Arrow Button --- */
+    .back-nav-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: -12px; /* Pulls slightly closer to the first card */
+    }
+
+    .back-arrow-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-white);
+      color: var(--text-main);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      text-decoration: none;
+      transition: transform 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .back-arrow-btn:hover {
+      transform: translateX(-4px); /* Gently slides left on hover */
+      color: var(--brand-blue);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
+    }
+
+    /* --- Cards --- */
+    .tutorial-card {
+      background: var(--card-white);
+      border-radius: 16px;
+      padding: clamp(24px, 4.5vw, 40px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      font-family: var(--font-jiko);
+    }
+
+    /* Centered Plain Section Titles (No lines, no blue decorations) */
+    .section-title-centered {
+      text-align: center;
+      font-size: clamp(1.45rem, 2.8vw, 2rem);
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }
+
+    /* Play Section Inside First Card */
+    .play-link-wrapper {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .play-url-link {
+      display: inline-block;
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-weight: 600;
+      color: var(--brand-blue);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      word-break: break-all;
+      transition: color 0.2s ease;
+    }
+
+    .play-url-link:hover {
+      color: var(--brand-blue-hover);
+    }
+
+    .play-note-text {
+      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* Bullet List & Content Structure */
+    .bullet-list {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      color: #2e353f;
+      font-weight: 500;
+      line-height: 1.8;
+    }
+
+    .bullet-list > li {
+      position: relative;
+      padding-left: 1.35em;
+    }
+
+    .bullet-list > li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #2e353f;
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+
+    /* Nested Sub-bullet list */
+    .sub-bullet-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sub-bullet-list > li {
+      position: relative;
+      padding-left: 1.35em;
+    }
+
+    .sub-bullet-list > li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #2e353f;
+      font-weight: 700;
+    }
+
+    /* --- Centered Media --- */
+    /* YouTube 16:9 Responsive Video */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 16 / 9;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      background-color: #000000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Compact Centered GIF */
+    .gif-frame {
+      width: 100%;
+      max-width: 320px;
+      margin: 14px auto 16px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #dcdcdc;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      display: block;
+    }
+
+    .gif-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- Fullscreen Loading Bar Overlay -->
+  <div id="loadingOverlay">
+    <div class="loading-content">
+      <h2 class="loading-title">SWORDMAN</h2>
+      <div class="progress-bar-track">
+        <div id="progressBarFill" class="progress-bar-fill"></div>
+      </div>
+      <div id="progressPercent" class="progress-percent">0%</div>
+    </div>
+  </div>
+
+  <!-- Opening Pixels Reveal Canvas -->
+  <canvas id="pixelCanvas"></canvas>
+
+  <!-- Top Menu Banner -->
+  <header class="menu-banner">
+    <div class="banner-inner">
+      <div class="nav-left-group">
+        <a href="index.html" class="nav-sub-btn">home</a>
+        <a href="keiken.html" class="nav-sub-btn">経験</a>
+        <a href="bunseki.html" class="nav-sub-btn">自己分析</a>
+      </div>
+      <span class="nav-name-text">MAK WAI LUN</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Back to Home Button -->
+    <div class="back-nav-wrapper">
+      <a href="index.html" class="back-arrow-btn" aria-label="Homeに戻る">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </a>
+    </div>
+    <!-- Card 1: デモ動画 & プレイ -->
+    <section class="tutorial-card">
+      <h2 class="section-title-centered">デモ動画</h2>
+
+      <div class="video-wrapper">
+        <iframe
+          src="https://www.youtube.com/embed/H4Lz8WR17VM"
+          title="デモ動画"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <h2 class="section-title-centered" style="margin-top: 36px; margin-bottom: 12px;">プレイ</h2>
+
+      <div class="play-link-wrapper">
+        <a href="https://swordman-b.web.app/" target="_blank" rel="noopener noreferrer" class="play-url-link">
+          https://swordman-b.web.app/
+        </a>
+        <p class="play-note-text">（スマホブラウザでお願いします。）</p>
+      </div>
+    </section>
+
+    <!-- Card 2: 操作 -->
+    <section class="tutorial-card">
+      <h2 class="section-title-centered">操作</h2>
+
+      <ul class="bullet-list">
+        <li>青Button：武器切り替え</li>
+        <li>白Joystick：移動</li>
+        <li>
+          赤Joystick：体の向きを調整
+          <div class="gif-frame">
+            <img src="sword_1.gif" alt="赤Joystick" />
+          </div>
+        </li>
+
+        <li>
+          ダイヤル付き黄Joystick：
+          <ul class="sub-bullet-list">
+            <li>
+              ダイヤル：右手首の回転方向変更
+              <div class="gif-frame">
+                <img src="sword_2.gif" alt="ダイヤル" />
+              </div>
+            </li>
+            <li>
+              上下左右(十字)：剣の回転方向を変更する
+              <div class="gif-frame">
+                <img src="sword_3.gif" alt="十字" />
+              </div>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          画面上の任意の場所をDrag->右腕の位置調整（攻撃を防御するため）
+          <div class="gif-frame">
+            <img src="sword_4.gif" alt="防御" />
+          </div>
+        </li>
+
+        <li>
+          画面をスワイプすることで、剣で岩を切る
+          <div class="gif-frame">
+            <img src="sword_5.gif" alt="スワイプ" />
+          </div>
+        </li>
+
+        <li>切られた破片をDoubleClickしてパチンコの弾薬を回収</li>
+
+        <li>
+          パチンコ：
+          <ul class="sub-bullet-list">
+            <li>まず、青いボタンで弾薬数をチェック</li>
+            <li>
+              画面上の任意の場所をDragして発射
+              <div class="gif-frame">
+                <img src="sword_6.gif" alt="パチンコ" />
+              </div>
+            </li>
+            <li>パチンコの方向を調整しながら、もう一方の指で上下にDragして高さを調整</li>
+          </ul>
+        </li>
+
+        <li>
+          敵との押し合いに勝つ方法：
+          <ul class="sub-bullet-list">
+            <li>押し合う時に表示されるパラメータを見て、剣が交差する3つの角度の中で、少なくとも2つの角を70度より大きくすることはゴールです！</li>
+            <li>2つのパラメーターが点滅しているのを確認したら、素早くスワイプ操作をしてください。</li>
+            <li>そうすると、敵に後方に弾き飛ばさせます。</li>
+            <li>
+              敵がスタン状態になったら、画面をスワイプしてソードで攻撃できます！
+              <div class="gif-frame">
+                <img src="sword_7.gif" alt="勝つ方法" />
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       Asset Preloader (with Progress Bar) + Pixel Reveal Transition
+       ===================================================================== */
+    (function () {
+      const loadingOverlay = document.getElementById("loadingOverlay");
+      const progressBarFill = document.getElementById("progressBarFill");
+      const progressPercent = document.getElementById("progressPercent");
+      const canvas = document.getElementById("pixelCanvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      // Primary Gray-Blue Curtain Color (#628abc)
+      const pixelR = 98;
+      const pixelG = 138;
+      const pixelB = 188;
+
+      // Draw initial solid canvas underneath the loading screen
+      ctx.fillStyle = `rgb(${pixelR}, ${pixelG}, ${pixelB})`;
+      ctx.fillRect(0, 0, width, height);
+
+      // Pixel square grid setup
+      const squareSize = 34;
+      const cols = Math.ceil(width / squareSize);
+      const rows = Math.ceil(height / squareSize);
+      const centerCol = (cols - 1) / 2;
+      const maxDist = cols / 2;
+
+      const squares = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const distFromCenter = Math.abs(c - centerCol);
+          const normDist = distFromCenter / (maxDist || 1);
+          const jitter = (Math.random() - 0.5) * 0.12;
+          const startDelay = Math.max(0, normDist + jitter);
+
+          squares.push({
+            x: c * squareSize,
+            y: r * squareSize,
+            startDelay: startDelay
+          });
+        }
+      }
+
+      // Track all images (GIFs) on the page
+      window.addEventListener("DOMContentLoaded", () => {
+        const images = Array.from(document.querySelectorAll("img"));
+        const totalImages = images.length;
+        let loadedCount = 0;
+        let visualProgress = 0;
+
+        function updateProgress() {
+          const targetProgress = totalImages > 0 ? (loadedCount / totalImages) * 100 : 100;
+          visualProgress += (targetProgress - visualProgress) * 0.35;
+
+          const displayVal = Math.min(Math.round(visualProgress), 100);
+          progressBarFill.style.width = displayVal + "%";
+          progressPercent.textContent = displayVal + "%";
+
+          if (displayVal < 100) {
+            requestAnimationFrame(updateProgress);
+          }
+        }
+        requestAnimationFrame(updateProgress);
+
+        function trackImage(img) {
+          return new Promise((resolve) => {
+            if (img.complete && img.naturalWidth !== 0) {
+              loadedCount++;
+              resolve();
+            } else {
+              img.addEventListener("load", () => {
+                loadedCount++;
+                resolve();
+              }, { once: true });
+              img.addEventListener("error", () => {
+                loadedCount++; // Fail-safe: don't freeze on error
+                resolve();
+              }, { once: true });
+            }
+          });
+        }
+
+        const imagePromises = images.map(trackImage);
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 6000)); // 6s fallback safety
+
+        Promise.race([Promise.all(imagePromises), timeoutPromise]).then(() => {
+          // Snap progress to 100%
+          progressBarFill.style.width = "100%";
+          progressPercent.textContent = "100%";
+
+          setTimeout(() => {
+            // Fade out the loading bar UI smoothly
+            loadingOverlay.classList.add("fade-out");
+            setTimeout(() => {
+              loadingOverlay.remove();
+              // Kick off the pixel curtain transition
+              startCurtainAnimation();
+            }, 400);
+          }, 250);
+        });
+      });
+
+      // Curtain Reveal Routine
+      function startCurtainAnimation() {
+        const animDuration = 1150; // ms
+        let startTime = null;
+
+        function render(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / animDuration, 1);
+
+          ctx.clearRect(0, 0, width, height);
+          let allFinished = true;
+
+          for (let i = 0; i < squares.length; i++) {
+            const sq = squares[i];
+            const fadeWindow = 0.28;
+            let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
+
+            if (localP < 0) localP = 0;
+            if (localP > 1) localP = 1;
+
+            const alpha = 1 - localP;
+
+            if (alpha > 0) {
+              allFinished = false;
+              ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
+              ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+            }
+          }
+
+          if (!allFinished && progress < 1) {
+            requestAnimationFrame(render);
+          } else {
+            canvas.remove();
+          }
+        }
+
+        requestAnimationFrame(render);
+      }
+    })();
+  </script>
+</body>
+</html> 

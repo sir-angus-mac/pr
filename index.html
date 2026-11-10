@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>マク・イリン | ポートフォリオ</title>
+  <title>HOME</title>
 
   <!-- Google Fonts: 'M PLUS 1p' (Clean Arial-like Japanese Gothic), 'Noto Sans JP', & 'Outfit' -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -293,28 +293,50 @@
       opacity: 1;
     }
 
-    /* --- "ゲーム説明" Link: Underlined & Tad bit less bolded (700) --- */
+    /* --- Game Title Links (Dark Blue & Center-Out Underline Animation) --- */
     .game-desc-text {
+      position: relative;
       display: inline-block;
       margin-top: clamp(12px, 1.8vw, 16px);
-      color: #2a313d;
+      color: #1e3a8a; /* Dark blue color */
       font-size: clamp(1.35rem, 3vw, 2.05rem);
       font-weight: 700;
       letter-spacing: 0.05em;
-      text-decoration: underline;
-      text-underline-offset: 5px;
-      text-decoration-thickness: 2px;
+      text-decoration: none; /* No default underline */
       background: none;
       border: none;
       outline: none;
       cursor: pointer;
       white-space: nowrap;
-      transition: color 0.2s ease, transform 0.2s ease;
+      transition: color 0.25s ease;
     }
 
+    /* Expanding underline starting from center outwards */
+    .game-desc-text::after {
+      content: "";
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: var(--brand-blue);
+      border-radius: 999px;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Underline expands from center when:
+       1. The GIF card above is hovered
+       2. The text itself is hovered */
+    .gif-card:hover + .game-desc-text::after,
+    .game-desc-text:hover::after {
+      transform: scaleX(1);
+    }
+
+    .gif-card:hover + .game-desc-text,
     .game-desc-text:hover {
       color: var(--brand-blue);
-      transform: translateY(-2px);
     }
 
     /* --- Note Below the GIFs --- */
@@ -365,14 +387,11 @@
   <!-- Top Menu Banner (Fixed Overlay) -->
   <header class="menu-banner">
     <div class="banner-inner">
-      <!-- Left side: "home", "経験", "自己分析" -->
-      <!-- Left side: "home", "経験", "自己分析" -->
       <div class="nav-left-group">
         <a href="#top" class="nav-home-btn">home</a>
         <a href="keiken.html" class="nav-sub-btn">経験</a>
         <a href="bunseki.html" class="nav-sub-btn">自己分析</a>
       </div> 
-      <!-- Right side: Name -->
       <span class="nav-name-text">MAK WAI LUN</span>
     </div>
   </header>
@@ -400,26 +419,26 @@
       <div class="gif-deck">
         <!-- Game 1 -->
         <div class="game-item">
-          <a href="http://thekanjigame.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+          <a href="kanji.html" class="gif-card">
             <img src="game1.gif" alt="The Kanji Game" />
           </a>
-          <a href="#" class="game-desc-text">ゲーム説明</a>
+          <a href="kanji.html" class="game-desc-text">KANJI</a> 
         </div>
 
         <!-- Game 2 -->
         <div class="game-item">
-          <a href="https://goto-hell-game.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+          <a href="gotohell.html" class="gif-card">
             <img src="game2.gif" alt="Goto Hell Game" />
           </a>
-          <a href="#" class="game-desc-text">ゲーム説明</a>
-        </div>
+          <a href="gotohell.html" class="game-desc-text">GO TO HELL</a> 
+        </div> 
 
         <!-- Game 3 -->
         <div class="game-item">
-          <a href="https://swordman-b.web.app/" target="_blank" rel="noopener noreferrer" class="gif-card">
+          <a href="swordman.html" class="gif-card">
             <img src="game3.gif" alt="Swordman B" />
           </a>
-          <a href="#" class="game-desc-text">ゲーム説明</a>
+          <a href="swordman.html" class="game-desc-text">SWORDMAN</a>
         </div>
       </div>
 
@@ -430,7 +449,7 @@
       </div>
     </main>
 
-    <!-- 4. Pure Text Section (No overlay / No box) -->
+    <!-- 4. Pure Text Section -->
     <section class="strength-text-section" id="strength-section">
       <p>
         <strong>私の強み</strong>は、他人のアイデアを合わせ、魅力的な形へと現実化する力です。
@@ -455,7 +474,7 @@
 
   <script>
     /* =====================================================================
-       1. Pixel Reveal Effect (Increased Blue Saturation: rgb(98, 138, 188))
+       Preload Images & Pixel Reveal Transition
        ===================================================================== */
     (function () {
       const canvas = document.getElementById("pixelCanvas");
@@ -472,11 +491,16 @@
       const centerCol = (cols - 1) / 2;
       const maxDist = cols / 2;
 
-      // Higher saturation Gray-Blue Tone (#628abc)
+      // Primary Gray-Blue Curtain Color (#628abc)
       const pixelR = 98;
       const pixelG = 138;
       const pixelB = 188;
 
+      // 1. Immediately paint the canvas opaque so nothing shows during load
+      ctx.fillStyle = `rgb(${pixelR}, ${pixelG}, ${pixelB})`;
+      ctx.fillRect(0, 0, width, height);
+
+      // Build grid squares for the reveal animation
       const squares = [];
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -493,62 +517,78 @@
         }
       }
 
-      const animDuration = 1150; // ms
-      let startTime = null;
-
-      function render(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const elapsed = timestamp - startTime;
-        const progress = Math.min(elapsed / animDuration, 1);
-
-        ctx.clearRect(0, 0, width, height);
-
-        let allFinished = true;
-
-        for (let i = 0; i < squares.length; i++) {
-          const sq = squares[i];
-          const fadeWindow = 0.28;
-          let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
-
-          if (localP < 0) localP = 0;
-          if (localP > 1) localP = 1;
-
-          const alpha = 1 - localP;
-
-          if (alpha > 0) {
-            allFinished = false;
-            ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
-            ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+      // Helper function: Return a Promise that resolves when an image is ready
+      function waitForImage(img) {
+        return new Promise((resolve) => {
+          if (img.complete && img.naturalWidth !== 0) {
+            resolve();
+          } else {
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true }); // Fallback on error
           }
-        }
-
-        if (!allFinished && progress < 1) {
-          requestAnimationFrame(render);
-        } else {
-          canvas.remove();
-        }
+        });
       }
 
-      requestAnimationFrame(render);
-    })();
+      // 2. Wait until DOM is parsed, then track all <img> elements
+      window.addEventListener("DOMContentLoaded", () => {
+        const images = Array.from(document.querySelectorAll("img"));
+        const imgPromises = images.map(waitForImage);
 
-    /* =====================================================================
-       2. Image Shimmer Loader
-       ===================================================================== */
-    document.addEventListener("DOMContentLoaded", () => {
-      const cards = document.querySelectorAll(".gif-card");
-      cards.forEach((card) => {
-        const img = card.querySelector("img");
-        if (img) {
-          if (img.complete && img.naturalHeight !== 0) {
+        // Fallback max wait: 5 seconds (prevents indefinite freezing on poor connection)
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // When all images are ready (or timeout hit), start revealing the page
+        Promise.race([Promise.all(imgPromises), timeoutPromise]).then(() => {
+          // Mark all gif cards as loaded so images appear immediately
+          document.querySelectorAll(".gif-card").forEach((card) => {
             card.classList.add("loaded");
+          });
+
+          // Begin the pixel fade-out reveal animation
+          startCurtainAnimation();
+        });
+      });
+
+      // 3. Reveal Animation Routine
+      function startCurtainAnimation() {
+        const animDuration = 1150; // ms
+        let startTime = null;
+
+        function render(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / animDuration, 1);
+
+          ctx.clearRect(0, 0, width, height);
+          let allFinished = true;
+
+          for (let i = 0; i < squares.length; i++) {
+            const sq = squares[i];
+            const fadeWindow = 0.28;
+            let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
+
+            if (localP < 0) localP = 0;
+            if (localP > 1) localP = 1;
+
+            const alpha = 1 - localP;
+
+            if (alpha > 0) {
+              allFinished = false;
+              ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
+              ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+            }
+          }
+
+          if (!allFinished && progress < 1) {
+            requestAnimationFrame(render);
           } else {
-            img.addEventListener("load", () => card.classList.add("loaded"));
-            img.addEventListener("error", () => card.classList.add("loaded"));
+            canvas.remove(); // Safely remove canvas when finished
           }
         }
-      });
-    });
+
+        requestAnimationFrame(render);
+      }
+    })();
   </script>
 </body>
 </html> 
