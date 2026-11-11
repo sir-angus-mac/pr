@@ -189,7 +189,7 @@
     .back-nav-wrapper {
       display: flex;
       align-items: center;
-      margin-bottom: -12px; /* Pulls slightly closer to the first card */
+      margin-bottom: -12px;
     }
 
     .back-arrow-btn {
@@ -208,7 +208,7 @@
     }
 
     .back-arrow-btn:hover {
-      transform: translateX(-4px); /* Gently slides left on hover */
+      transform: translateX(-4px);
       color: var(--brand-blue);
       box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
     }
@@ -236,7 +236,7 @@
     /* Play Section Link Styling */
     .play-link-wrapper {
       text-align: center;
-      margin-top: 4px;
+      margin-top: 14px;
     }
 
     .play-url-link {
@@ -260,6 +260,17 @@
       margin-top: 8px;
       font-weight: 500;
       line-height: 1.6;
+    }
+
+    /* Overview text styling */
+    .overview-intro {
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      color: #2e353f;
+      font-weight: 500;
+      line-height: 1.85;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     /* Bullet List & Content Structure */
@@ -365,6 +376,7 @@
     <div class="banner-inner">
       <div class="nav-left-group">
         <a href="index.html" class="nav-sub-btn">home</a>
+        <a href="art.html" class="nav-sub-btn">art</a>
         <a href="keiken.html" class="nav-sub-btn">経験</a>
         <a href="bunseki.html" class="nav-sub-btn">自己分析</a>
       </div>
@@ -382,19 +394,47 @@
         </svg>
       </a>
     </div>
+
     <!-- Card 1: プレイ -->
     <section class="tutorial-card">
       <h2 class="section-title-centered">プレイ</h2>
+
+      <!-- Centered GIF (game1.gif) -->
+      <div class="gif-frame">
+        <img src="game1.gif" alt="Kanji ゲームプレイ" />
+      </div>
 
       <div class="play-link-wrapper">
         <a href="https://thekanjigame.web.app/" target="_blank" rel="noopener noreferrer" class="play-url-link">
           https://thekanjigame.web.app/
         </a>
-        <p class="play-note-text">（PCでもプレイ可能です。）</p>　
+        <p class="play-note-text">（PCでもプレイ可能です。）</p>
       </div>
     </section>
 
-    <!-- Card 2: 操作 -->
+    <!-- Card 2: 概要 -->
+    <section class="tutorial-card">
+      <h2 class="section-title-centered">概要</h2>
+
+      <div class="overview-intro">
+        <p>
+          このゲームを作ったきっかけは、日本語の語彙力をアップさせたかったからです。
+          もうすぐJLPT（日本語能力試験）を受ける予定なので、自分にとって役立つゲームになりました。
+        </p>
+        <p>
+          このゲームでは、漢字の正しい書き順、その漢字を使った単語や読み方を楽しく学ぶことができます。
+        </p>
+      </div>
+
+      <ul class="bullet-list" style="margin-top: 24px;">
+        <li><strong>ルール：</strong>テトリスのフォーマットのように、落ちてくる漢字を消して、画面の上までたまらないようにするゲームです。</li>
+        <li><strong>開発言語：</strong>HTML / JavaScript</li> 
+        <li><strong>ツール：</strong>Visual Studio Code</li>
+        <li><strong>使ったAI：</strong>Gemini無料版（デバッグ、困った時コードの書き方を示す）</li>
+      </ul>
+    </section>
+
+    <!-- Card 3: 操作 -->
     <section class="tutorial-card">
       <h2 class="section-title-centered">操作</h2>
 
@@ -419,7 +459,7 @@
       </ul>
     </section>
 
-    <!-- Card 3: 「斬る」モード -->
+    <!-- Card 4: 「斬る」モード -->
     <section class="tutorial-card">
       <h2 class="section-title-centered">「斬る」モード</h2>
 
@@ -437,7 +477,7 @@
       </ul>
     </section>
 
-    <!-- Card 4: 文字が「斬」に変化する条件 -->
+    <!-- Card 5: 文字が「斬」に変化する条件 -->
     <section class="tutorial-card">
       <h2 class="section-title-centered">文字が「斬」に変化する条件</h2>
 
@@ -481,7 +521,7 @@
       </ol>
     </section>
 
-    <!-- Card 5: 困ったときは -->
+    <!-- Card 6: 困ったときは -->
     <section class="tutorial-card">
       <h2 class="section-title-centered">困ったときは</h2>
 
@@ -493,6 +533,22 @@
             <img src="kanji_7.gif" alt="ヒント表示" />
           </div>
         </li>
+      </ul>
+    </section>
+
+    <!-- Card 7: 漢字の書き順の調べ方 -->
+    <section class="tutorial-card">
+      <h2 class="section-title-centered">漢字の書き順の調べ方</h2>
+
+      <div class="gif-frame">
+        <img src="kanji_9.gif" alt="漢字の書き順の調べ方" />
+      </div>
+
+      <ul class="bullet-list">
+        <li><strong>書き順を見たいとき：</strong>メニューの文字を押す</li>
+        <li><strong>次の文字に進みたいとき：</strong>「▶▶」を押す</li>
+        <li><strong>もう一度見たいとき：</strong>「⟲」を押す</li>
+        <li><strong>字の意味を見たいとき：</strong>「weblio.jp」を押す</li>
       </ul>
     </section>
   </main>

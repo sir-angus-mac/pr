@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ART</title>
+
+  <!-- Google Fonts: 'M PLUS 1p', 'Noto Sans JP', & 'Outfit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* --- Reset & Global Theme (Matching index.html) --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-page: #ebeef2;               /* Light grey background */
+      --text-main: #1d2127;             /* Dark body text */
+      --text-muted: #555e6b;            /* Subdued grey */
+      --brand-blue: #2563eb;            /* Vivid royal blue */
+      --brand-blue-glow: rgba(37, 99, 235, 0.3);
+      --card-white: #ffffff;
+      --font-gothic: "Noto Sans JP", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      --font-jiko: "M PLUS 1p", Arial, "Helvetica Neue", sans-serif;
+      --font-brand: "Outfit", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-gothic);
+      line-height: 1.7;
+      padding-top: clamp(86px, 11vw, 105px);
+      padding-bottom: 90px;
+      overflow-x: hidden;
+    }
+
+    /* --- Pixel Curtain Canvas --- */
+    #pixelCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      pointer-events: none;
+    }
+
+    /* --- Main Menu Bar: Fixed Overlay --- */
+    .menu-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(212, 218, 224, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      z-index: 1000;
+    }
+
+    .banner-inner {
+      width: 100%;
+      max-width: 1040px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(12px, 3vw, 24px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Left Nav Group: "home", "art", "経験", "自己分析" */
+    .nav-left-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.8vw, 22px);
+    }
+
+    /* Active Page (art) Button */
+    .nav-active-btn {
+      font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-active-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    /* Standard Sub-nav Buttons */
+    .nav-sub-btn {
+      font-size: clamp(1.2rem, 1.9vw, 1.6rem);
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-sub-btn:hover {
+      color: var(--brand-blue);
+      transform: translateY(-1px);
+    }
+
+    /* English Name on the Right */
+    .nav-name-text {
+      font-family: var(--font-brand);
+      font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* --- Content Container --- */
+    .container {
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 clamp(14px, 3vw, 24px);
+    }
+
+    /* --- Subtitle --- */
+    .section-subtitle {
+      text-align: center;
+      font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+      font-weight: 900;
+      color: #000000;
+      letter-spacing: 0.08em;
+      margin-bottom: clamp(18px, 2.8vw, 28px);
+      font-family: var(--font-brand), var(--font-gothic);
+    }
+
+    /* --- Gallery Grid Layout (9:16 Cards) --- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(12px, 2.4vw, 24px);
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 680px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    /* --- Card Aesthetics --- */
+    .art-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      border-radius: clamp(8px, 1.3vw, 12px);
+      overflow: hidden;
+      background-color: #dcdcdc;
+      display: block;
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
+      border: 3.5px solid transparent;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      cursor: pointer;
+    }
+
+    .art-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--brand-blue);
+      box-shadow: 0 12px 28px var(--brand-blue-glow);
+    }
+
+    /* Skeleton Loading Shimmer */
+    .art-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, #d8d8d8 25%, #ececec 50%, #d8d8d8 75%);
+      background-size: 200% 100%;
+      animation: pulse 1.6s infinite;
+      z-index: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .art-card.loaded::before {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Artwork Media */
+    .art-card img,
+    .art-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      position: relative;
+      z-index: 2;
+    }
+
+    .art-card.loaded img,
+    .art-card.loaded video {
+      opacity: 1;
+    }
+
+    /* Subtle Magnify/Inspect Overlay Hint */
+    .inspect-hint {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      z-index: 3;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .art-card:hover .inspect-hint {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* --- Note Below Gallery --- */
+    .gallery-note {
+      text-align: center;
+      font-size: clamp(0.85rem, 1.5vw, 0.98rem);
+      color: var(--text-muted);
+      margin-top: 14px;
+      font-weight: 500;
+      line-height: 1.85;
+    }
+
+    /* --- Lightbox Modal --- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(10, 14, 20, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      cursor: zoom-out;
+    }
+
+    .modal-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 90vw;
+      max-height: 86vh;
+      transform: scale(0.95);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-content img,
+    .modal-content video {
+      display: block;
+      max-width: 90vw;
+      max-height: 86vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      user-select: none;
+    }
+
+    .modal-close {
+      position: fixed;
+      top: 22px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-size: 2rem;
+      line-height: 1;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+      z-index: 100000;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.06);
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- Opening Pixels Reveal Canvas (Same as index.html) -->
+  <canvas id="pixelCanvas"></canvas>
+
+  <!-- Top Menu Banner (Fixed Overlay) -->
+  <header class="menu-banner"> 
+    <div class="banner-inner">
+      <div class="nav-left-group">
+        <a href="index.html" class="nav-sub-btn">home</a>
+        <a href="#top" class="nav-active-btn">art</a>
+        <a href="keiken.html" class="nav-sub-btn">経験</a>
+        <a href="bunseki.html" class="nav-sub-btn">自己分析</a>
+      </div> 
+      <span class="nav-name-text">MAK WAI LUN</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Subtitle -->
+    <h1 class="section-subtitle">ART</h1>
+
+    <!-- 15-Artwork Gallery Grid -->
+    <main class="gallery-grid">
+      <!-- 1. art1.PNG -->
+      <div class="art-card">
+        <img src="art1.PNG" alt="Artwork 1" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 2. art2.PNG -->
+      <div class="art-card">
+        <img src="art2.PNG" alt="Artwork 2" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 3. art3.PNG -->
+      <div class="art-card">
+        <img src="art3.PNG" alt="Artwork 3" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 4. art4.PNG -->
+      <div class="art-card">
+        <img src="art4.PNG" alt="Artwork 4" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 5. art5.PNG -->
+      <div class="art-card">
+        <img src="art5.PNG" alt="Artwork 5" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 6. VID_1.mp4 -->
+      <div class="art-card">
+        <video src="VID_1.mp4" autoplay muted loop playsinline preload="auto"></video>
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 7. VID_2.mov -->
+      <div class="art-card">
+        <video src="VID_2.mov" autoplay muted loop playsinline preload="auto"></video>
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 8. VID_3.mp4 -->
+      <div class="art-card">
+        <video src="VID_3.mp4" autoplay muted loop playsinline preload="auto"></video>
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 9. art1.jpg -->
+      <div class="art-card">
+        <img src="art1.jpg" alt="Artwork 6" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 10. art2.jpg -->
+      <div class="art-card">
+        <img src="art2.jpg" alt="Artwork 7" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 11. art3.jpg -->
+      <div class="art-card">
+        <img src="art3.jpg" alt="Artwork 8" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 12. art4.jpg -->
+      <div class="art-card">
+        <img src="art4.jpg" alt="Artwork 9" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 13. art5.jpg -->
+      <div class="art-card">
+        <img src="art5.jpg" alt="Artwork 10" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 14. art6.jpg -->
+      <div class="art-card">
+        <img src="art6.jpg" alt="Artwork 11" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+
+      <!-- 15. art7.jpg -->
+      <div class="art-card">
+        <img src="art7.jpg" alt="Artwork 12" />
+        <span class="inspect-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+      </div>
+    </main>
+
+    <!-- Gallery Note -->
+    <div class="gallery-note">
+      <p>※ 画像や動画をクリックすると拡大できます。</p> 
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="lightboxModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <button class="modal-close" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+    <div class="modal-content">
+      <img id="modalImg" src="" alt="Enlarged Artwork" style="display: none;" />
+      <video id="modalVideo" src="" controls playsinline muted style="display: none;"></video>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       1. Preload All Images & Videos, then Dissolve Pixel Curtain
+       ===================================================================== */
+    (function () {
+      const canvas = document.getElementById("pixelCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      // Pixel square size
+      const squareSize = 34;
+      const cols = Math.ceil(width / squareSize);
+      const rows = Math.ceil(height / squareSize);
+      const centerCol = (cols - 1) / 2;
+      const maxDist = cols / 2;
+
+      // Primary Gray-Blue Curtain Color (#628abc)
+      const pixelR = 98;
+      const pixelG = 138;
+      const pixelB = 188;
+
+      // Immediately paint the canvas opaque so nothing flashes
+      ctx.fillStyle = `rgb(${pixelR}, ${pixelG}, ${pixelB})`;
+      ctx.fillRect(0, 0, width, height);
+
+      // Build grid squares for the reveal animation
+      const squares = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const distFromCenter = Math.abs(c - centerCol);
+          const normDist = distFromCenter / (maxDist || 1);
+          const jitter = (Math.random() - 0.5) * 0.12;
+          const startDelay = Math.max(0, normDist + jitter);
+
+          squares.push({
+            x: c * squareSize,
+            y: r * squareSize,
+            startDelay: startDelay
+          });
+        }
+      }
+
+      // Helper function: check when an image or video is ready
+      function waitForMedia(el) {
+        return new Promise((resolve) => {
+          if (el.tagName.toLowerCase() === "img") {
+            if (el.complete && el.naturalWidth !== 0) {
+              resolve();
+            } else {
+              el.addEventListener("load", () => resolve(), { once: true });
+              el.addEventListener("error", () => resolve(), { once: true });
+            }
+          } else if (el.tagName.toLowerCase() === "video") {
+            if (el.readyState >= 2) {
+              resolve();
+            } else {
+              el.addEventListener("loadeddata", () => resolve(), { once: true });
+              el.addEventListener("canplay", () => resolve(), { once: true });
+              el.addEventListener("error", () => resolve(), { once: true });
+            }
+          } else {
+            resolve();
+          }
+        });
+      }
+
+      // Wait until DOM is ready, then track all gallery media
+      window.addEventListener("DOMContentLoaded", () => {
+        const mediaElements = Array.from(document.querySelectorAll(".art-card img, .art-card video"));
+        const mediaPromises = mediaElements.map(waitForMedia);
+
+        // Fallback max wait: 5 seconds to prevent locking on slow networks
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // When all images and videos are loaded (or timeout hits)
+        Promise.race([Promise.all(mediaPromises), timeoutPromise]).then(() => {
+          // Reveal cards smoothly
+          document.querySelectorAll(".art-card").forEach((card) => {
+            card.classList.add("loaded");
+          });
+
+          // Begin pixel dissolve reveal
+          startCurtainAnimation();
+        });
+      });
+
+      // Curtain dissolve animation
+      function startCurtainAnimation() {
+        const animDuration = 1150; // ms
+        let startTime = null;
+
+        function render(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / animDuration, 1);
+
+          ctx.clearRect(0, 0, width, height);
+          let allFinished = true;
+
+          for (let i = 0; i < squares.length; i++) {
+            const sq = squares[i];
+            const fadeWindow = 0.28;
+            let localP = (progress - sq.startDelay * 0.72) / fadeWindow;
+
+            if (localP < 0) localP = 0;
+            if (localP > 1) localP = 1;
+
+            const alpha = 1 - localP;
+
+            if (alpha > 0) {
+              allFinished = false;
+              ctx.fillStyle = `rgba(${pixelR}, ${pixelG}, ${pixelB}, ${alpha})`;
+              ctx.fillRect(sq.x, sq.y, squareSize + 0.5, squareSize + 0.5);
+            }
+          }
+
+          if (!allFinished && progress < 1) {
+            requestAnimationFrame(render);
+          } else {
+            canvas.remove();
+          }
+        }
+
+        requestAnimationFrame(render);
+      }
+    })();
+
+    /* =====================================================================
+       2. Lightbox Zoom / Inspect Functionality
+       ===================================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".art-card");
+      const modal = document.getElementById("lightboxModal");
+      const modalImg = document.getElementById("modalImg");
+      const modalVideo = document.getElementById("modalVideo");
+      const modalCloseBtn = document.getElementById("modalCloseBtn");
+      const modalBackdrop = document.querySelector(".modal-backdrop");
+
+      cards.forEach((card) => {
+        const img = card.querySelector("img");
+        const video = card.querySelector("video");
+
+        card.addEventListener("click", () => {
+          if (img) {
+            modalVideo.pause();
+            modalVideo.style.display = "none";
+            modalVideo.removeAttribute("src");
+
+            modalImg.src = img.currentSrc || img.src;
+            modalImg.alt = img.alt || "Artwork";
+            modalImg.style.display = "block";
+          } else if (video) {
+            modalImg.style.display = "none";
+            modalImg.removeAttribute("src");
+
+            modalVideo.muted = true;
+            modalVideo.defaultMuted = true;
+            modalVideo.src = video.currentSrc || video.src;
+            modalVideo.style.display = "block";
+            modalVideo.currentTime = 0;
+            modalVideo.play().catch(() => {});
+          }
+
+          modal.classList.add("active");
+          modal.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        });
+      });
+
+      const closeModal = () => {
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+
+        if (modalVideo) modalVideo.pause();
+
+        setTimeout(() => {
+          if (!modal.classList.contains("active")) {
+            modalImg.removeAttribute("src");
+            modalVideo.removeAttribute("src");
+            modalImg.style.display = "none";
+            modalVideo.style.display = "none";
+          }
+        }, 300);
+      };
+
+      modalCloseBtn.addEventListener("click", closeModal);
+      modalBackdrop.addEventListener("click", closeModal);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("active")) {
+          closeModal();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
